@@ -1,16 +1,25 @@
 from tkinter import *
+from tkinter import messagebox
+from tkinter.font import Font
+from PIL import Image, ImageTk
 from pygame import mixer
 
+WIN_HEIGHT = 684
+WIN_WIDTH = 912
 
 class Piano(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         mixer.init()
-        mixer.set_num_channels(34) # Number of .wav files that can read at the same time, to allow playing several notes together without/with less chance of being interrupted by not producing sound anymore
+        mixer.set_num_channels(34) # Number of audio files that can read at the same time, to allow playing several notes together without/with less chance of being interrupted by not producing sound anymore
         self.init_notes('notes')
         self.init_features()
         self.bind_keys()
         self.init_piano_GUI()
+
+
+
+        
         
     # Initialize the 88-key piano in the same order as a real piano
     def init_notes(self, path):
@@ -83,23 +92,23 @@ class Piano(Tk):
     # Binds command on the keyboard to the piano app
     def bind_keys(self):
         self.keyboard_layout = {
-            '<w>': ['C3'],
-            '<s>': ['C3#'],
-            '<x>': ['D3'],
-            '<d>': ['D3#'],
-            '<c>': ['E3'],
-            '<v>': ['F3'],
-            '<g>': ['F3#'],
-            '<b>': ['G3'],
-            '<h>': ['G3#'],
-            '<n>': ['A3'],
-            '<j>': ['A3#'],
-            '<,>': ['B3'],
-            '<;>': ['C4'],
-            '<l>': ['C4#'],
-            '<:>': ['D4'],
-            '<m>': ['D4#'],
-            '<!>': ['E4'],
+            '<w>': ['C4'],
+            '<s>': ['C4#'],
+            '<x>': ['D4'],
+            '<d>': ['D4#'],
+            '<c>': ['E4'],
+            '<v>': ['F4'],
+            '<g>': ['F4#'],
+            '<b>': ['G4'],
+            '<h>': ['G4#'],
+            '<n>': ['A4'],
+            '<j>': ['A4#'],
+            '<,>': ['B4'],
+            '<;>': ['C5'],
+            '<l>': ['C5#'],
+            '<:>': ['D5'],
+            '<m>': ['D5#'],
+            '<!>': ['E5'],
         }
         
         for i in self.keyboard_layout:
@@ -113,14 +122,25 @@ class Piano(Tk):
         self.bind("<Control-t>", self.enable_disable_trace_mode)
         self.bind("<Control-s>", self.enable_disable_sustain_pedal)
 
-    # Draws the piano on the screen
+    # Draws the piano and the background on the screen
     def init_piano_GUI(self):
-        self.piano_frame = Frame(self) #, bg='black'
-        self.piano_frame.pack()
-        self.canvas = Canvas(self.piano_frame, bg="gray", width=700, height=500, borderwidth=1, relief="solid")
-        self.canvas.pack() # padx=15, pady=15 to see the piano frame
-        self.quit_button = Button(self.piano_frame, text='Quit')
-        self.quit_button.pack()
+        self.bg = ImageTk.PhotoImage(file='ressources/piano_rig_v2.png')
+        self.my_canvas = Canvas(self, width=WIN_WIDTH, height=WIN_HEIGHT)
+        self.my_canvas.pack()
+        self.my_canvas.create_image(0, 0, image=self.bg, anchor="nw")
+
+
+        self.piano_frame = Frame(self)
+        self.piano_frame.place(x=WIN_WIDTH/9, y=WIN_HEIGHT*0.22-2)
+        self.canvas = Canvas(self.piano_frame, bg="gray", width=698, height=498)
+        self.canvas.pack()
+
+
+        self.button_frame = Frame(self)
+        self.button_frame.place(x=WIN_WIDTH*0.91, y=WIN_HEIGHT*0.94)
+        self.quit_button = Button(self.button_frame, text='Quit', width=8, command=self.quit_app)
+        self.quit_button.grid(row=1, column=0)
+
 
         whites = self.get_white_keys()
         blacks = self.get_black_keys()
@@ -141,6 +161,18 @@ class Piano(Tk):
                 continue
             
         self.canvas.update()
+
+
+        # Transpose value
+        self.transpose_value = StringVar()
+        self.transpose_value.set("{0}".format(self.transpose))
+        self.transpose_text = Label(self, textvariable=self.transpose_value, fg="red", font=("MS Gothic", 35), bg="gray")
+        self.transpose_text.place(x=WIN_WIDTH*0.27, y=WIN_HEIGHT*0.06)
+
+
+
+
+
 
     # Plays the corresponding sound when pressing a key
     def play_note(self, event, note):
@@ -228,29 +260,37 @@ class Piano(Tk):
         self.transpose -= 1
         if (self.trace_mode):
             print('Transpose downward by one semitone/half step')
+        self.transpose_value.set("{0}".format(self.transpose))
 
     def transpose_to_upper_semitone(self, event):
         self.transpose += 1
         if (self.trace_mode):
             print('Transpose upward by one semitone/half step')
+        self.transpose_value.set("{0}".format(self.transpose))
 
     def transpose_to_lower_octave(self, event):
         self.transpose -= 12
         if (self.trace_mode):
             print('transpose downward by one octave')
+        self.transpose_value.set("{0}".format(self.transpose))
 
     def transpose_to_upper_octave(self, event):
         self.transpose += 12
         if (self.trace_mode):
             print('transpose upward by one octave')
+        self.transpose_value.set("{0}".format(self.transpose))
+
+    def quit_app(self):
+        if messagebox.askokcancel("Quit", "Close the app ?"):
+            self.destroy()
 
 
 def main():
-    WIN_HEIGHT = 500
-    WIN_WIDTH = 700
     app = Piano()
     app.title("Piano")
-    app.geometry(str(WIN_WIDTH) + 'x' + str(WIN_HEIGHT)) # 1280x720
+    app.geometry(str(WIN_WIDTH) + 'x' + str(WIN_HEIGHT))
     app.minsize(WIN_WIDTH, WIN_HEIGHT)
     app.maxsize(WIN_WIDTH, WIN_HEIGHT)
+    app.iconphoto(True, PhotoImage(file="ressources/piano_icon.png")) 
+    app.protocol("WM_DELETE_WINDOW", app.quit_app)
     app.mainloop()
