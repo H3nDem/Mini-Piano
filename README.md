@@ -45,7 +45,5 @@ Realized by Henrique D.M.M
 ## Demo images
 ### Keyboard
 ![Alt text](./demo_images/demo0.png)
-### Pressing keys on the keyboard
+### Pressing keys on the keyboard and transposing notes
 ![Alt text](./demo_images/demo1.png)
-### Trace mode on the terminal
-![Alt text](./demo_images/demo2.png)
