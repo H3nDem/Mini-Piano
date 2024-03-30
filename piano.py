@@ -124,7 +124,7 @@ class Piano(Tk):
 
     # Draws the piano and the background on the screen
     def init_piano_GUI(self):
-        self.bg = ImageTk.PhotoImage(file='ressources/piano_rig_v2.png')
+        self.bg = ImageTk.PhotoImage(file='ressources/piano_rig.png')
         self.my_canvas = Canvas(self, width=WIN_WIDTH, height=WIN_HEIGHT)
         self.my_canvas.pack()
         self.my_canvas.create_image(0, 0, image=self.bg, anchor="nw")
